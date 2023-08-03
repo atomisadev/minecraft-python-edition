@@ -1,16 +1,20 @@
-import ctypes
-import pyglet.gl as gl
-import pyglet
+
+import matrix  # import matrix.py file
 import shader
+import pyglet.gl as gl
+import math  # always useful to have
+import ctypes
+import pyglet
 
 pyglet.options["shadow_window"] = False
 pyglet.options["debug_gl"] = False
 
-vertex_positions = [  # 3d coordinates for each vertex
-    -0.5,  0.5, 1.0,
-    -0.5, -0.5, 1.0,
-    0.5, -0.5, 1.0,
-    0.5,  0.5, 1.0,
+
+vertex_positions = [
+    -0.5,  0.5, 0.0,
+    -0.5, -0.5, 0.0,
+    0.5, -0.5, 0.0,
+    0.5,  0.5, 0.0,
 ]
 
 indices = [
@@ -21,7 +25,7 @@ indices = [
 
 class Window(pyglet.window.Window):
     def __init__(self, **args):
-        super(Window, self).__init__(**args)
+        super().__init__(**args)
 
         self.vao = gl.GLuint(0)
         gl.glGenVertexArrays(1, ctypes.byref(self.vao))
@@ -49,29 +53,54 @@ class Window(pyglet.window.Window):
                         gl.GL_STATIC_DRAW)
 
         self.shader = shader.Shader("vert.glsl", "frag.glsl")
+        self.shader_matrix_location = self.shader.find_uniform(
+            b"matrix")
         self.shader.use()
 
+        self.mv_matrix = matrix.Matrix()  # modelview
+        self.p_matrix = matrix.Matrix()  # projection
+
+        self.x = 0
+
+        pyglet.clock.schedule_interval(self.update, 1.0 / 60)
+
+    def update(self, delta_time):
+        self.x += delta_time
+
     def on_draw(self):
-        gl.glClearColor(1.0, 0.5, 1.0, 1.0)
+
+        self.p_matrix.load_identity()
+        self.p_matrix.perspective(
+            90, float(self.width) / self.height, 0.1, 500)
+
+        self.mv_matrix.load_identity()
+        self.mv_matrix.translate(0, 0, -1)
+        self.mv_matrix.rotate_2d(
+            self.x + 6.28 / 4, math.sin(self.x / 3 * 2) / 2)
+
+        mvp_matrix = self.p_matrix * self.mv_matrix
+        self.shader.uniform_matrix(self.shader_matrix_location, mvp_matrix)
+
+        gl.glClearColor(0.0, 0.0, 0.0, 1.0)
         self.clear()
 
         gl.glDrawElements(
             gl.GL_TRIANGLES,
             len(indices),
             gl.GL_UNSIGNED_INT,
-            None
-        )
+            None)
 
     def on_resize(self, width, height):
-        print(f"resize {width} * {height}")
+        print(f"Resize {width} * {height}")
         gl.glViewport(0, 0, width, height)
 
 
 class Game:
     def __init__(self):
-        self.config = gl.Config(major_version=3)
+        self.config = gl.Config(
+            double_buffer=True, major_version=3, minor_version=3)
         self.window = Window(config=self.config, width=800, height=600,
-                             caption="Minecraft: Python Edition", resizable=True, vsync=False)
+                             caption="Minecraft clone", resizable=True, vsync=False)
 
     def run(self):
         pyglet.app.run()
