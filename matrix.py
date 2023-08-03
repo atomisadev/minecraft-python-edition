@@ -4,21 +4,20 @@ import math
 
 
 def copy_matrix(matrix):
-    # we need to use deepcopy since we're dealing with 2D arrays
-    return copy.deepcopy(matrix)
+    return copy.deepcopy(matrix)  # using 2d arrays so deepcopy is needed
 
 
-clean_matrix = [[0.0 for x in range(4)] for x in range(4)]
-identity_matrix = copy_matrix(clean_matrix)
+open_matrix = [[0.0 for x in range(4)] for x in range(4)]
+iden_matrix = copy_matrix(open_matrix)
 
-identity_matrix[0][0] = 1.0
-identity_matrix[1][1] = 1.0
-identity_matrix[2][2] = 1.0
-identity_matrix[3][3] = 1.0
+iden_matrix[0][0] = 1.0
+iden_matrix[1][1] = 1.0
+iden_matrix[2][2] = 1.0
+iden_matrix[3][3] = 1.0
 
 
 def multiply_matrices(x_matrix, y_matrix):
-    result_matrix = copy_matrix(clean_matrix)
+    result_matrix = copy_matrix(open_matrix)
 
     for i in range(4):
         for j in range(4):
@@ -38,10 +37,10 @@ class Matrix:
         elif type(base) == list:
             self.data = copy_matrix(base)
         else:
-            self.data = copy_matrix(clean_matrix)
+            self.data = copy_matrix(open_matrix)
 
     def load_identity(self):
-        self.data = copy_matrix(identity_matrix)
+        self.data = copy_matrix(iden_matrix)
 
     def __mul__(self, matrix):
         return Matrix(multiply_matrices(self.data, matrix.data))
@@ -72,7 +71,7 @@ class Matrix:
 
         sin_angle = math.sin(angle)
         cos_angle = math.cos(angle)
-        one_minus_cos = 1.0 - cos_angle
+        cos_complement = 1.0 - cos_angle
 
         xx = x * x
         yy = y * y
@@ -86,19 +85,19 @@ class Matrix:
         ys = y * sin_angle
         zs = z * sin_angle
 
-        rotation_matrix = copy_matrix(clean_matrix)
+        rotation_matrix = copy_matrix(open_matrix)
 
-        rotation_matrix[0][0] = (one_minus_cos * xx) + cos_angle
-        rotation_matrix[0][1] = (one_minus_cos * xy) - zs
-        rotation_matrix[0][2] = (one_minus_cos * zx) + ys
+        rotation_matrix[0][0] = (cos_complement * xx) + cos_angle
+        rotation_matrix[0][1] = (cos_complement * xy) - zs
+        rotation_matrix[0][2] = (cos_complement * zx) + ys
 
-        rotation_matrix[1][0] = (one_minus_cos * xy) + zs
-        rotation_matrix[1][1] = (one_minus_cos * yy) + cos_angle
-        rotation_matrix[1][2] = (one_minus_cos * yz) - xs
+        rotation_matrix[1][0] = (cos_complement * xy) + zs
+        rotation_matrix[1][1] = (cos_complement * yy) + cos_angle
+        rotation_matrix[1][2] = (cos_complement * yz) - xs
 
-        rotation_matrix[2][0] = (one_minus_cos * zx) - ys
-        rotation_matrix[2][1] = (one_minus_cos * yz) + xs
-        rotation_matrix[2][2] = (one_minus_cos * zz) + cos_angle
+        rotation_matrix[2][0] = (cos_complement * zx) - ys
+        rotation_matrix[2][1] = (cos_complement * yz) + xs
+        rotation_matrix[2][2] = (cos_complement * zz) + cos_angle
 
         rotation_matrix[3][3] = 1.0
         self.data = multiply_matrices(self.data, rotation_matrix)
@@ -108,21 +107,21 @@ class Matrix:
         self.rotate(-y, math.cos(x), 0, math.sin(x))
 
     def frustum(self, left, right, bottom, top, near, far):
-        deltax = right - left
-        deltay = top - bottom
-        deltaz = far - near
+        dx = right - left
+        dy = top - bottom
+        dz = far - near
 
-        frustum_matrix = copy_matrix(clean_matrix)
+        frustum_matrix = copy_matrix(open_matrix)
 
-        frustum_matrix[0][0] = 2 * near / deltax
-        frustum_matrix[1][1] = 2 * near / deltay
+        frustum_matrix[0][0] = 2 * near / dx
+        frustum_matrix[1][1] = 2 * near / dy
 
-        frustum_matrix[2][0] = (right + left) / deltax
-        frustum_matrix[2][1] = (top + bottom) / deltay
-        frustum_matrix[2][2] = -(near + far) / deltaz
+        frustum_matrix[2][0] = (right + left) / dx
+        frustum_matrix[2][1] = (top + bottom) / dy
+        frustum_matrix[2][2] = -(near + far) / dz
 
         frustum_matrix[2][3] = -1.0
-        frustum_matrix[3][2] = -2 * near * far / deltaz
+        frustum_matrix[3][2] = -2 * near * far / dz
 
         self.data = multiply_matrices(self.data, frustum_matrix)
 
@@ -134,19 +133,19 @@ class Matrix:
                      frustum_y * near, frustum_y * near, near, far)
 
     def orthographic(self, left, right, bottom, top, near, far):
-        deltax = right - left
-        deltay = top - bottom
-        deltaz = far - near
+        dx = right - left
+        dy = top - bottom
+        dz = far - near
 
-        orthographic_matrix = copy_matrix(identity_matrix)
+        orthographic_matrix = copy_matrix(iden_matrix)
 
-        orthographic_matrix[0][0] = 2.0 / deltax
-        orthographic_matrix[3][0] = -(right + left) / deltax
+        orthographic_matrix[0][0] = 2.0 / dx
+        orthographic_matrix[3][0] = -(right + left) / dx
 
-        orthographic_matrix[1][1] = 2.0 / deltay
-        orthographic_matrix[3][1] = -(top + bottom) / deltay
+        orthographic_matrix[1][1] = 2.0 / dy
+        orthographic_matrix[3][1] = -(top + bottom) / dy
 
-        orthographic_matrix[2][2] = 2.0 / deltax
-        orthographic_matrix[3][2] = -(near + far) / deltaz
+        orthographic_matrix[2][2] = 2.0 / dx
+        orthographic_matrix[3][2] = -(near + far) / dz
 
         self.data = multiply_matrices(self.data, orthographic_matrix)
