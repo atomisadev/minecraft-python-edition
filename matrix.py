@@ -149,3 +149,6 @@ class Matrix:
         orthographic_matrix[3][2] = -(near + far) / dz
 
         self.data = multiply_matrices(self.data, orthographic_matrix)
+
+
+# help me i have no idea what im doing lol
