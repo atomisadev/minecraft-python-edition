@@ -4,7 +4,7 @@ import pyglet
 import pyglet.gl as gl
 
 
-class TextureManager:
+class Texture_manager:
     def __init__(self, texture_width, texture_height, max_textures):
         self.texture_width = texture_width
         self.texture_height = texture_height
@@ -26,7 +26,6 @@ class TextureManager:
             0, gl.GL_RGBA, gl.GL_UNSIGNED_BYTE, None)
 
     def generate_mipmaps(self):
-        gl.glBindTexture(gl.GL_TEXTURE_2D_ARRAY, self.texture_array)
         gl.glGenerateMipmap(gl.GL_TEXTURE_2D_ARRAY)
 
     def add_texture(self, texture):
