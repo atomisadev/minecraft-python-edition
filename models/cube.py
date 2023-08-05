@@ -1,3 +1,6 @@
+transparent = False
+is_cube = True
+
 vertex_positions = [
     [0.5,  0.5,  0.5,  0.5, -0.5,  0.5,  0.5, -
         0.5, -0.5,  0.5,  0.5, -0.5],  # right

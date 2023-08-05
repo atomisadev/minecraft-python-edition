@@ -4,19 +4,19 @@ import pyglet
 import pyglet.gl as gl
 
 
-class Texture_manager:
+class TextureManager:
     def __init__(self, texture_width, texture_height, max_textures):
         self.texture_width = texture_width
         self.texture_height = texture_height
-
         self.max_textures = max_textures
-
         self.textures = []
 
         self.texture_array = gl.GLuint(0)
         gl.glGenTextures(1, self.texture_array)
         gl.glBindTexture(gl.GL_TEXTURE_2D_ARRAY, self.texture_array)
 
+        gl.glTexParameteri(gl.GL_TEXTURE_2D_ARRAY,
+                           gl.GL_TEXTURE_MIN_FILTER, gl.GL_NEAREST)
         gl.glTexParameteri(gl.GL_TEXTURE_2D_ARRAY,
                            gl.GL_TEXTURE_MAG_FILTER, gl.GL_NEAREST)
 

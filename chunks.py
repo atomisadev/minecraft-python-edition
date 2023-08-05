@@ -2,20 +2,19 @@ import ctypes
 
 import pyglet.gl as gl
 
-
 CHUNK_WIDTH = 16
 CHUNK_HEIGHT = 16
 CHUNK_LENGTH = 16
 
 
 class Chunk:
-    def __init__(self, world, chunk_position):
-        self.chunk_position = chunk_position
+    def __init__(self, world, chunk_pos):
+        self.chunk_pos = chunk_pos
 
         self.position = (
-            self.chunk_position[0] * CHUNK_WIDTH,
-            self.chunk_position[1] * CHUNK_HEIGHT,
-            self.chunk_position[2] * CHUNK_LENGTH)
+            self.chunk_pos[0] * CHUNK_WIDTH,
+            self.chunk_pos[1] * CHUNK_HEIGHT,
+            self.chunk_pos[2] * CHUNK_LENGTH)
 
         self.world = world
 
@@ -50,7 +49,6 @@ class Chunk:
         gl.glGenBuffers(1, self.ibo)
 
     def update_mesh(self):
-
         self.has_mesh = True
 
         self.mesh_vertex_positions = []
@@ -93,18 +91,23 @@ class Chunk:
                             self.position[1] + local_y,
                             self.position[2] + local_z)
 
-                        if not self.world.get_block_number((x + 1, y, z)):
-                            add_face(0)
-                        if not self.world.get_block_number((x - 1, y, z)):
-                            add_face(1)
-                        if not self.world.get_block_number((x, y + 1, z)):
-                            add_face(2)
-                        if not self.world.get_block_number((x, y - 1, z)):
-                            add_face(3)
-                        if not self.world.get_block_number((x, y, z + 1)):
-                            add_face(4)
-                        if not self.world.get_block_number((x, y, z - 1)):
-                            add_face(5)
+                        if block_type.is_cube:
+                            if not self.world.get_block_number((x + 1, y, z)):
+                                add_face(0)
+                            if not self.world.get_block_number((x - 1, y, z)):
+                                add_face(1)
+                            if not self.world.get_block_number((x, y + 1, z)):
+                                add_face(2)
+                            if not self.world.get_block_number((x, y - 1, z)):
+                                add_face(3)
+                            if not self.world.get_block_number((x, y, z + 1)):
+                                add_face(4)
+                            if not self.world.get_block_number((x, y, z - 1)):
+                                add_face(5)
+
+                        else:
+                            for i in range(len(block_type.vertex_positions)):
+                                add_face(i)
 
         if not self.mesh_index_counter:
             return

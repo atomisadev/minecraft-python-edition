@@ -5,16 +5,16 @@ import math
 
 
 def copy_matrix(matrix):
-    return copy.deepcopy(matrix)
+    return copy.deepcopy(matrix)  # 2d arrays, so need to deepcopy
 
 
 clean_matrix = [[0.0 for x in range(4)] for x in range(4)]
-identity_matrix = copy_matrix(clean_matrix)
+open_matrix = copy_matrix(clean_matrix)
 
-identity_matrix[0][0] = 1.0
-identity_matrix[1][1] = 1.0
-identity_matrix[2][2] = 1.0
-identity_matrix[3][3] = 1.0
+open_matrix[0][0] = 1.0
+open_matrix[1][1] = 1.0
+open_matrix[2][2] = 1.0
+open_matrix[3][3] = 1.0
 
 
 def multiply_matrices(x_matrix, y_matrix):
@@ -41,7 +41,7 @@ class Matrix:
             self.data = copy_matrix(clean_matrix)
 
     def load_identity(self):
-        self.data = copy_matrix(identity_matrix)
+        self.data = copy_matrix(open_matrix)
 
     def __mul__(self, matrix):
         return Matrix(multiply_matrices(self.data, matrix.data))
@@ -138,15 +138,15 @@ class Matrix:
         dy = top - bottom
         dz = far - near
 
-        orthographic_matrix = copy_matrix(identity_matrix)
+        ortho_matrix = copy_matrix(open_matrix)
 
-        orthographic_matrix[0][0] = 2.0 / dx
-        orthographic_matrix[3][0] = -(right + left) / dx
+        ortho_matrix[0][0] = 2.0 / dx
+        ortho_matrix[3][0] = -(right + left) / dx
 
-        orthographic_matrix[1][1] = 2.0 / dy
-        orthographic_matrix[3][1] = -(top + bottom) / dy
+        ortho_matrix[1][1] = 2.0 / dy
+        ortho_matrix[3][1] = -(top + bottom) / dy
 
-        orthographic_matrix[2][2] = 2.0 / dx
-        orthographic_matrix[3][2] = -(near + far) / dz
+        ortho_matrix[2][2] = 2.0 / dx
+        ortho_matrix[3][2] = -(near + far) / dz
 
-        self.data = multiply_matrices(self.data, orthographic_matrix)
+        self.data = multiply_matrices(self.data, ortho_matrix)

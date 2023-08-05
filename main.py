@@ -1,5 +1,7 @@
 
 import world
+import texturemanager as texture_manager
+import blocktype as block_type
 import camera
 import shader
 import matrix
@@ -22,13 +24,14 @@ class Window(pyglet.window.Window):
         self.shader_sampler_location = self.shader.find_uniform(
             b"texture_array_sampler")
         self.shader.use()
+
         pyglet.clock.schedule_interval(self.update, 1.0 / 10000)
         self.mouse_captured = False
 
         self.camera = camera.Camera(self.shader, self.width, self.height)
 
     def update(self, dt):
-        print(f"FPS {1 / dt}")
+        print(f"FPS: {1.0 / dt}")
 
         if not self.mouse_captured:
             self.camera.input = [0, 0, 0]
@@ -37,6 +40,7 @@ class Window(pyglet.window.Window):
 
     def on_draw(self):
         self.camera.update_matrices()
+
         gl.glActiveTexture(gl.GL_TEXTURE0)
         gl.glBindTexture(gl.GL_TEXTURE_2D_ARRAY,
                          self.world.texture_manager.texture_array)
@@ -55,8 +59,8 @@ class Window(pyglet.window.Window):
         print(f"Resize {width} * {height}")
         gl.glViewport(0, 0, width, height)
 
-        self.camera.width = width
-        self.camera.height = height
+        self.camera.w = width
+        self.camera.h = height
 
     def on_mouse_press(self, x, y, button, modifiers):
         self.mouse_captured = not self.mouse_captured
@@ -111,7 +115,6 @@ class Window(pyglet.window.Window):
 
 class Game:
     def __init__(self):
-        # add depth_size = 16 because pyglet makes a 24 bit depth buffer by default, which isn't supported on some hardware
         self.config = gl.Config(
             double_buffer=True, major_version=3, minor_version=3, depth_size=16)
         self.window = Window(config=self.config, width=800, height=600,

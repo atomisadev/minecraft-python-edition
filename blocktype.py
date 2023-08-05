@@ -1,15 +1,21 @@
-import staticnums
+import models.cube
 
 
-class Block_type:
-    def __init__(self, texture_manager, name="unknown", block_face_textures={"all": "cobblestone"}):
+class BlockType:
+    def __init__(self, texture_manager, name="unknown", block_face_textures={"all": "cobblestone"}, model=models.cube):
         self.name = name
 
-        self.vertex_positions = staticnums.vertex_positions
-        self.tex_coords = staticnums.tex_coords.copy()
-        self.shading_values = staticnums.shading_values
+        self.transparent = model.transparent
+        self.is_cube = model.is_cube
+
+        self.vertex_positions = model.vertex_positions
+        self.tex_coords = model.tex_coords.copy()
+        self.shading_values = model.shading_values
 
         def set_block_face(face, texture):
+            if face > len(self.tex_coords) - 1:
+                return
+
             self.tex_coords[face] = self.tex_coords[face].copy()
 
             for vertex in range(4):
